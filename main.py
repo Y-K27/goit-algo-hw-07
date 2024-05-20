@@ -4,27 +4,34 @@ from collections import UserDict
 class Field:
     def __init__(self, value):
         self.value = value
-
+        
     def __str__(self):
         return str(self.value)
 
 # Клас для зберігання імені контакту. Обов'язкове поле.
 class Name(Field):
-     def __init__(self, contact_name):
+    def __init__(self, contact_name):
         self.contact_name = contact_name
+        print("cheking name")
+        
+    def check_name(self):
         if len(self.contact_name) >= 2:
+            print(f"cheking name returne :{self.contact_name}")
             return self.contact_name
         else:
             print("Name is too short")
+            raise "Name is too short"
         
 # Клас для зберігання номера телефону. Має валідацію формату (10 цифр)
 class Phone(Field):
     def __init__(self, phone_number):
         self.phone = phone_number
+    def check_phone_number(self):
         if len(self.phone) == 10 and self.phone.isdigit():
             return self.phone
         else:
-            print("The number is incorrect. the phone number must consist of 10 digits ")
+            print("The number is incorrect. The phone number must consist of 10 digits ")
+            raise ValueError
 
 
 class Birthday(Field):
@@ -37,18 +44,20 @@ class Birthday(Field):
 
 # Клас для зберігання інформації про контакт, включаючи ім'я та список телефонів.
 class Record:
-    def __init__(self, name):
-        self.name = Name(name)
-        self.phones = []
+    def __init__(self, record_name, record_list):
+        self.name = Name(record_name).check_name()
+        self.phones = record_list
         self.birthday = None
         
     def add_phone(self, phone):
-        if phone not in [p.value for p in self.phones]:
+        print
+        if phone not in self.phones:
+            print(f"Phone list :{self.phones}")
             self.phones.append(phone)
-            print(f'Phone {phone} has been successfully added from contact {self.name}')
+            print(f'Phone {phone} has been successfully added from contact {self.name}') 
         else:
             print(f"Phone {phone} already recorded for a contact {self.name}")
-        pass
+            raise "conflict of types"
     
     def remove_phone(self, phone):
         if phone in [p.value for p in self.phones]:
@@ -74,8 +83,9 @@ class Record:
     
 
 # Виведення всіх записів у книзі
-    def __str__(self):
-        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
+    #def __str__(self):
+    #    print("check __str__")
+    #    return f"Contact name: {self.name}, phones: {'; '.join(p.value for p in self.phones)}"
 
  # Створення нової адресної книги
  # Додавання/видалення запису до адресної книги
@@ -91,11 +101,12 @@ class AddressBook(UserDict):
             self.address_book[contact.name] = contact.phones
             print("The contact has been saved")
         else:
-            print("A contact {contact.name} already exists in the contact book")
+            print(f"A contact {contact.name} already exists in the contact book")
     
     def find(self, name):
         if name in [key for key in self.address_book]:
-            return(f"Contact name: {name}, phones: {self.address_book[name]}")
+            print(f"Contact name: {name}, phones: {self.address_book[name]}")
+            return self.address_book[name]
 
                   
     def delete(self, name):
@@ -112,13 +123,13 @@ def input_error(func):
         try:
             return func(*args, **kwargs)
         except ValueError:
-            return "Give me name and phone please."
+            return "Give me name and phone please. "
         except KeyError:
             return "Give me correct name please."
         except TypeError:
             return "Give me correct name and phone please."
         except IndexError:
-            return "Give me name and phone please."
+            return "Give me name and phone please. Wrong index"
 
     return inner
 
@@ -129,14 +140,22 @@ def parse_input(user_input):
 
 @input_error
 def add_contact(args, book: AddressBook):
-    name, phone, *_ = args
-    record = book.find(name)
-    if record is None:
-        record = Record(name)
+    add_contact_name, phone, *_ = args
+    record = book.find(add_contact_name)
+    print(f"find record: {record}")
+    if record == None:
+        record = Record(add_contact_name,[])
+        chek_in_number=Phone(phone).check_phone_number() # перевіряємо перед записом чи номер введений правильно
+        record.add_phone(chek_in_number)
         book.add_record(record)
         message = "Contact added."
-    if phone:
-        record.add_phone(phone)
+    elif phone:
+        #print("cheking phone number")
+        chek_in_number=Phone(phone).check_phone_number() # перевіряємо перед записом чи номер введений правильно
+        #print(type(chek_in_number), chek_in_number)
+        #print(f"old record: {type(record)}, {record}")
+        record_rwr = Record(add_contact_name, record)
+        record_rwr.add_phone(chek_in_number)
         message = "Contact updated."
     return message
 
