@@ -50,7 +50,6 @@ class Record:
         self.birthday = None
         
     def add_phone(self, phone):
-        print
         if phone not in self.phones:
             print(f"Phone list :{self.phones}")
             self.phones.append(phone)
@@ -142,16 +141,15 @@ def parse_input(user_input):
 def add_contact(args, book: AddressBook):
     add_contact_name, phone, *_ = args
     record = book.find(add_contact_name)
+    chek_in_number=Phone(phone).check_phone_number()# перевіряємо перед записом чи номер введений правильно
     print(f"find record: {record}")
     if record == None:
         record = Record(add_contact_name,[])
-        chek_in_number=Phone(phone).check_phone_number() # перевіряємо перед записом чи номер введений правильно
         record.add_phone(chek_in_number)
         book.add_record(record)
         message = "Contact added."
     elif phone:
         #print("cheking phone number")
-        chek_in_number=Phone(phone).check_phone_number() # перевіряємо перед записом чи номер введений правильно
         #print(type(chek_in_number), chek_in_number)
         #print(f"old record: {type(record)}, {record}")
         record_rwr = Record(add_contact_name, record)
