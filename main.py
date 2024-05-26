@@ -198,20 +198,20 @@ def change_contact_number(args, book: AddressBook ):            #Функйці�
 #@input_error    
 def all_contacts(book: AddressBook):                            # Функція виведення всіх контактів з телефонної книги
     list=''
-    book_test = dict(book.address_book)
+    book_all_contacts = dict(book.address_book)
     #print(type(book_test), book_test)
-    if book_test == None:
+    if book_all_contacts == None:
         return "Phone book is empty"
     else:
-        for key in book_test:
-            if book_test[key]['Birthday'] != None:
-                list+= f"Name: \"{key}\" Phone: {book_test[key]['Phone']}, Birthday: {book_test[key]['Birthday']}\n" #Записуємо в одремі радки дані для кожгоного елемента телефонної книги
+        for key in book_all_contacts:
+            if book_all_contacts[key]['Birthday'] != None:
+                list+= f"Name: \"{key}\" Phone: {book_all_contacts[key]['Phone']}, Birthday: {book_all_contacts[key]['Birthday']}\n" #Записуємо в одремі радки дані для кожгоного елемента телефонної книги
             else:
-                list+= f"Name: \"{key}\" Phone: {book_test[key]['Phone']}\n"
+                list+= f"Name: \"{key}\" Phone: {book_all_contacts[key]['Phone']}\n"
         return list                                             #Повертаємо список як результат роботи функції
 
 
-#@input_error
+@input_error                                                    #Ф-ія додавання дати народження до існуючого контакту
 def add_birthdays(args, book: AddressBook):
     add_bd_name, date, *_ = args
     #print(Birthday(date))
@@ -229,32 +229,33 @@ def add_birthdays(args, book: AddressBook):
 
 
 @input_error
-def show_birthdays(args, book: AddressBook):
+def show_birthdays(args, book: AddressBook):                    # Ф-ія поветає дату народження для заданого контакту
     show_bd_name, *_ = args
-    book_rekord = book.find(show_bd_name)
-    if book_rekord == None:
+    book_record = book.find(show_bd_name)
+    if book_record == None:
         return f"Contact: {show_bd_name} are not exist"
     else:
-        if book_rekord['Birthday']!= None:
-            return book_rekord['Birthday']
+        if book_record['Birthday']!= None:
+            return book_record['Birthday']
         else:
             return f"Contact: {show_bd_name} has no recorded birthday" 
 
 
-#@input_error
-def birthdays(book: AddressBook):
+@input_error
+def birthdays(book: AddressBook):                               # Ф-ія поветає імена і дати народження для контактів у яких день народження у найближчі 7 днів
     list= ''
     interval = timedelta(days=7)
-    now_day = datetime.now()
+    now_day = datetime.now().date()
     day_max = now_day+interval
-    book_rekord = book.address_book
-    print(type(book_rekord), book_rekord)
-    for item in book_rekord:
-        if book_rekord[item]['Birthday'] != None:
-            book_rekord[item]['Birthday'].year = now_day.year
-            if book[item]['Birthday']>=now_day and book[item]['Birthday']<=day_max:
-                list+=f"Name: \"{item}\" Birthday: {book[item]['Birthday']}\n"
+    book_record = book.address_book
+    #print(type(book_rekord), book_rekord)
+    for item in book_record:
+        if book_record[item]['Birthday'] != None:
+            book_record[item]['Birthday']=book_record[item]['Birthday'].replace(year=now_day.year)
+            if book_record[item]['Birthday']>=now_day and book_record[item]['Birthday']<=day_max:
+                list+=f"Name: \"{item}\" Birthday: {book_record[item]['Birthday']}\n"
     return list
+
 
 
 
@@ -273,24 +274,24 @@ def main():
         elif command == "hello":
             print("How can I help you?")
         elif command == "add":
-            print(add_contact(args, book))                      # done
+            print(add_contact(args, book))                      
             
         elif command == "all":
-            print(all_contacts(book))                           # done
+            print(all_contacts(book))                           
               
         elif command == "phone":
-            print(check_contact(args, book))                    # done    
+            print(check_contact(args, book))                        
             
         elif command == "change":    
-            print(change_contact_number(args, book))            # done
+            print(change_contact_number(args, book))            
             
         elif command == "birthdays":                            
             print(birthdays(book))
             
-        elif command == "show-birthday":                        # done
+        elif command == "show-birthday":                        
             print(show_birthdays(args, book))
                    
-        elif command == "add-birthday":                         # done
+        elif command == "add-birthday":                         
             print(add_birthdays(args, book))
                         
         else:
