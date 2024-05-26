@@ -195,7 +195,7 @@ def change_contact_number(args, book: AddressBook ):            #Функйці�
         book.add_record(chenged_record, change)
         return "Contakt updated."
 
-#@input_error    
+@input_error    
 def all_contacts(book: AddressBook):                            # Функція виведення всіх контактів з телефонної книги
     list=''
     book_all_contacts = dict(book.address_book)
